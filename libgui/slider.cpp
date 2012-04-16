@@ -87,7 +87,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	if ( hasFocus() ) {
-		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this );
+//		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this );
 	}
 
 	//double pos = dbtondb( _value )*w-w/2;

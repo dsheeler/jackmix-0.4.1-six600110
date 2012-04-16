@@ -23,6 +23,7 @@
 
 #include <mixingmatrix.h>
 #include <dbvolcalc.h>
+#include "shortcutmanager.h"
 
 namespace JackMix {
 
@@ -86,7 +87,12 @@ public:
 
 	double getVolume() const { return _volume_value; }
 	double getBalance() const { return _balance_value; }
-private slots:
+
+    public slots:
+        void increase_volume();
+        void decrease_volume();
+
+    private slots:
 	void balance( double );
 	void volume( double );
 	void calculateVolumes();
@@ -94,6 +100,7 @@ private:
 	QString _inchannel1, _inchannel2, _outchannel1, _outchannel2;
 	double _balance_value, _volume_value;
 	JackMix::GUI::Slider *_volume_widget, *_balance_widget;
+
 };
 
 void init_stereo_elements();

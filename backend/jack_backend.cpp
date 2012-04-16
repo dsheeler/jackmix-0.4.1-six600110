@@ -1,5 +1,5 @@
 /*
-    Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
+    Copyrightg 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,7 +27,10 @@ using namespace JackMix;
 
 JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	qDebug() << "JackBackend::JackBackend()";
-	client = ::jack_client_new( "JackMix" );
+	//client = ::jack_client_new( "JackMix" );
+	client = ::jack_client_open( "JackMix", 
+                                     JackNoStartServer,
+				     NULL );
 	//client = 0;
 	if ( client ) {
 		::jack_set_process_callback( client, JackMix::process, this );
@@ -43,8 +46,8 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 JackBackend::~JackBackend() {
 	qDebug() << "JackBackend::~JackBackend()";
 	if ( client ) {
-		/*qDebug() << " return code" <<*/ ::jack_deactivate( client );
-		/*qDebug() << " return code" <<*/ ::jack_client_close( client );
+                qDebug() << " return code" << ::jack_deactivate( client );
+                qDebug() << " return code" << ::jack_client_close( client );
 	}
 }
 

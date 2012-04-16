@@ -24,12 +24,15 @@
 #include "knob.h"
 #include "slider.h"
 
+#include "shortcutmanager.h"
+
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
 #include <QtCore/QList>
 #include <QtGui/QLabel>
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
+#include <QtGui/QWidget>
 
 using namespace JackMix;
 using namespace JackMix::MixerElements;
@@ -39,25 +42,62 @@ using namespace JackMix::MixingMatrix;
 class StereoFactory : public JackMix::MixingMatrix::ElementFactory
 {
 public:
-	StereoFactory() : ElementFactory() { globaldebug(); }
-	~StereoFactory() {}
+    StereoFactory() : ElementFactory() { globaldebug(); m_sm = ShortcutManager::instance(); }
+    ~StereoFactory() {}
 
-	QStringList canCreate() const {
-		return QStringList()<<"Mono2StereoElement"<<"Stereo2StereoElement";
-	}
-	QStringList canCreate( int in, int out ) const {
-		if ( in==1 && out==2 ) return QStringList()<<"Mono2StereoElement";
-		if ( in==2 && out==2 ) return QStringList()<<"Stereo2StereoElement";
-		return QStringList();
-	}
+    QStringList canCreate() const {
+        return QStringList()<<"Mono2StereoElement"<<"Stereo2StereoElement";
+    }
+    QStringList canCreate( int in, int out ) const {
+        if ( in==1 && out==2 ) return QStringList()<<"Mono2StereoElement";
+        if ( in==2 && out==2 ) return QStringList()<<"Stereo2StereoElement";
+        return QStringList();
+    }
 
-	Element* create( QString type , QStringList ins, QStringList outs, Widget* p, const char* n=0 ) {
-		if ( type=="Mono2StereoElement" )
-			return new Mono2StereoElement( ins, outs, p, n );
-		if ( type=="Stereo2StereoElement" )
-			return new Stereo2StereoElement( ins, outs, p, n );
-		return 0;
-	}
+    Element* create( QString type , QStringList ins, QStringList outs, Widget* p, const char* n=0 ) {
+        Stereo2StereoElement *tmp;
+        if ( type=="Mono2StereoElement" )
+            return new Mono2StereoElement( ins, outs, p, n );
+        if ( type=="Stereo2StereoElement" ) {
+            tmp = new Stereo2StereoElement( ins, outs, p, n );
+            if (ins[0] == "xmms_l" && ins[1] == "xmms_r" && outs[0] == "out_1" && outs[1] == "out_2") {
+                qDebug("i am connecting a stereo2stereo element to the volume controls");
+                m_sm->connect (tmp, "globalshortcuts/increase_vol", "Ctrl+Shift+Up", SLOT (increase_volume ()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol", "Ctrl+Shift+Down", SLOT (decrease_volume ()), true);
+            } else if (ins[0] == "xmms_l" && ins[1] == "xmms_r" && outs[0] == "aux_l" && outs[1] == "aux_r") {
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_xmms_aux", "Ctrl+Alt+Up", SLOT(increase_volume()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_xmms_aux", "Ctrl+Alt+Down", SLOT(decrease_volume()), true);
+            } else if (ins[0] == "in_1" && ins[1] == "in_2" && outs[0] == "aux_l" && outs[1] == "aux_r") {
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_in_1_2_aux", "Ctrl+Alt+o", SLOT(increase_volume()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_in_1_2_aux", "Ctrl+Alt+i", SLOT(decrease_volume()), true);
+            } else if (ins[0] == "in_1" && ins[1] == "in_2" && outs[0] == "out_1" && outs[1] == "out_2") {
+                qDebug("i am connecting a stereo2stereo element to the volume controls");
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_in_1_2_out", "Ctrl+Shift+o", SLOT (increase_volume ()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_in_1_2_out", "Ctrl+Shift+i", SLOT (decrease_volume ()), true);
+            } else if (ins[0] == "guitar_l" && ins[1] == "guitar_r" && outs[0] == "out_1" && outs[1] == "out_2") {
+                qDebug("i am connecting a stereo2stereo element to the volume controls");
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_in_guitar_out", "Ctrl+Shift+k", SLOT (increase_volume ()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_in_guitar_out", "Ctrl+Shift+j", SLOT (decrease_volume ()), true);
+            } else if (ins[0] == "guitar_l" && ins[1] == "guitar_r" && outs[0] == "aux_l" && outs[1] == "aux_r") {
+                qDebug("i am connecting a stereo2stereo element to the volume controls");
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_in_guitar_aux", "Ctrl+Alt+k", SLOT (increase_volume ()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_in_guitar_aux", "Ctrl+Alt+j", SLOT (decrease_volume ()), true);
+            } else if (ins[0] == "return_l" && ins[1] == "return_r" && outs[0] == "out_1" && outs[1] == "out_2") {
+                qDebug("i am connecting a stereo2stereo element to the volume controls");
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_in_return_out", "Ctrl+Shift+e", SLOT (increase_volume ()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_in_return_out", "Ctrl+Shift+w", SLOT (decrease_volume ()), true);
+            } else if (ins[0] == "return_l" && ins[1] == "return_r" && outs[0] == "aux_l" && outs[1] == "aux_r") {
+                qDebug("i am connecting a stereo2stereo element to the volume controls");
+                m_sm->connect (tmp, "globalshortcuts/increase_vol_in_return_aux", "Ctrl+Alt+e", SLOT (increase_volume ()), true);
+                m_sm->connect (tmp, "globalshortcuts/decrease_vol_in_return_aux", "Ctrl+Alt+w", SLOT (decrease_volume ()), true);
+            }
+            return tmp;
+        }
+        return 0;
+    }
+private:
+    ShortcutManager *m_sm;
+
 };
 
 void MixerElements::init_stereo_elements() {
@@ -164,6 +204,7 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	_layout->addWidget( _volume_widget, 1,0 );
 	_layout->setRowStretch( 1, 255 );
 	connect( _volume_widget, SIGNAL( valueChanged( double ) ), this, SLOT( volume( double ) ) );
+        _volume_value = amptodb(_volume_value);
 
 	QAction *toggle = new QAction( "Toggle Selection", this );
 	connect( toggle, SIGNAL( triggered() ), this, SLOT( slot_simple_select() ) );
@@ -171,8 +212,26 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	QAction *replace = new QAction( "Replace", this );
 	connect( replace, SIGNAL( triggered() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
+
+
+
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
+}
+
+void Stereo2StereoElement::increase_volume() {
+    qDebug( "Stereo2StereoElement::increase_volume()" );
+
+    //qDebug() << this->_volume_value;
+    this->volume(this->_volume_value + 3.0);
+
+}
+
+void Stereo2StereoElement::decrease_volume() {
+    qDebug( "Stereo2StereoElement::decrease_volume()" );
+
+    //  qDebug() << this->_volume_value;
+    this->volume(this->_volume_value - 3.0);
 }
 
 void Stereo2StereoElement::balance( double n ) {
@@ -182,6 +241,7 @@ void Stereo2StereoElement::balance( double n ) {
 	calculateVolumes();
 	emit valueChanged( this, QString( "balance" ) );
 }
+
 void Stereo2StereoElement::volume( double n ) {
 	//qDebug( "Mono2StereoElement::volume( double %f )", n );
 	_volume_value = n;
