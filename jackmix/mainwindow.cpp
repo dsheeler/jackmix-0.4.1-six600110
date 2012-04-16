@@ -29,6 +29,8 @@
 #include "aux_elements.h"
 #include "stereo_elements.h"
 
+#include "shortcutmanager.h"
+
 #include "qlash.h"
 
 #include <QtCore/QDebug>
@@ -98,6 +100,8 @@ MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _back
 
 	_autofillscheduled = false;
 	scheduleAutoFill();
+
+
 
 	//_lashclient->setJackName( "JackMix" );
 
@@ -174,12 +178,19 @@ void MainWindow::init() {
 	_select_action->toggle();
 	toggleselectmode();
 
-	_lashclient = new qLash::qLashClient( "JackMix", 0,0, this );
-	connect( _lashclient, SIGNAL( quitApp() ), this, SLOT( close() ) );
-	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
-	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
-	//_lashclient->setJackName( "JackMix" );
-}
+//        _lashclient = new qLash::qLashClient( "JackMix", 0,0, this );
+//        connect( _lashclient, SIGNAL( quitApp() ), this, SLOT( close() ) );
+//        connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
+//        connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
+       // _lashclient->setJackName( "JackMix" );
+
+
+        _db2volcalc = new JackMix::dB2VolCalc(-42., 6.);
+
+        qDebug() << "done with init";
+
+
+    }
 
 MainWindow::~MainWindow() {
 	qDebug() << "MainWindow::~MainWindow()";
@@ -195,6 +206,7 @@ void MainWindow::openFile() {
 	QString path = QFileDialog::getOpenFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
 	openFile( path );
 }
+
 
 void MainWindow::openFile( QString path ) {
 	//qDebug() << "MainWindow::openFile(" << path << ")";
@@ -225,7 +237,7 @@ void MainWindow::openFile( QString path ) {
 				QString name = in.attribute( "name" );
 				QString volume = in.attribute( "volume" );
 				addInput( name );
-				_backend->setVolume( name, name, volume.toDouble() );
+                                _backend->setVolume( name, name, volume.toDouble() );
 			}
 
 			QDomElement outs = jackmix.firstChildElement( "outs" );
@@ -356,6 +368,7 @@ void MainWindow::toggleout() {
 		_toggleout_action->setText( "Hide outputcontrols" );
 	}
 }
+
 
 void MainWindow::addInput() {
 	QString tmp = QInputDialog::getText( this, "Inchannel name", "Channel name", QLineEdit::Normal, "(empty)" );

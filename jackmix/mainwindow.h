@@ -25,6 +25,11 @@
 #include <QtGui/QDockWidget>
 #include <QtCore/QList>
 #include <QtGui/QGridLayout>
+#include <QMouseEvent>
+#include <QAction>
+
+#include <dbvolcalc.h>
+#include "shortcutmanager.h"
 
 class QHBox;
 class QSettings;
@@ -88,6 +93,7 @@ private slots:
 	void saveLash( QString dir );
 	void restoreLash( QString dir );
 
+
 private:
 	void init();
 	int config_restore_id;
@@ -96,10 +102,14 @@ private:
 	MainWindowHelperWidget* _mw;
 	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;
 	QAction *_debugPrint;
+
 	BackendInterface* _backend;
 	bool _autofillscheduled;
 
 	qLash::qLashClient* _lashclient;
+        JackMix::dB2VolCalc* _db2volcalc;
+
+        ShortcutManager *_sm;
 };
 
 };

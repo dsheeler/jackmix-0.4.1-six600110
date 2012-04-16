@@ -1,3 +1,4 @@
+
 /*
     Copyright 2005 - 2007 Arnold Krille <arnold@arnoldarts.de>
 
@@ -34,11 +35,11 @@ namespace JackMix {
 	 *
 	 * A backend has to implement this functions...
 	 */
-	class BackendInterface
-	{
-	public:
-		BackendInterface( GuiServer_Interface* );
-		virtual ~BackendInterface();
+    class BackendInterface
+    {
+    public:
+        BackendInterface( GuiServer_Interface* );
+        virtual ~BackendInterface();
 
 		/**
 		 * @brief Return the current list of output channels.
@@ -52,8 +53,9 @@ namespace JackMix {
 		/**
 		 * @brief Set the volume of the named node.
 		 */
-		virtual void setVolume( QString, QString, float ) =0;
-		/**
+                virtual void setVolume( QString, QString, float ) =0;
+
+                /**
 		 * @brief Get the volume of the named node.
 		 */
 		virtual float getVolume( QString, QString ) =0;
@@ -87,8 +89,10 @@ namespace JackMix {
 		 */
 		virtual bool removeInput( QString ) =0;
 
+
 	protected:
 		GuiServer_Interface* gui;
+
 
 	};
 };
