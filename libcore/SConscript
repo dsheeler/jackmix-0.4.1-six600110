@@ -3,7 +3,10 @@
 Import( 'env' )
 
 env = env.Clone()
+env.MergeFlags( "-I." )
 
 env.AppendUnique( CPPPATH=["#/libcore"] )
-env.StaticLibrary( target="jackmix_core", source= ['backend_interface.cpp'] )
+env.MergeFlags( env['QTGUI_FLAGS'] )
+#env.Moc('shortcutmanager.h')
+env.StaticLibrary( target="jackmix_core", source= ['backend_interface.cpp', 'globalshortcutmanager.cpp', 'globalshortcutmanager_x11.cpp', 'moc_globalshortcuttrigger.cpp', 'shortcutmanager.cpp', 'moc_shortcutmanager.cpp'] )
 
