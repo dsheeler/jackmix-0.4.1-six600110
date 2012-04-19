@@ -10,7 +10,7 @@ env = Environment( tools=['default', 'pkgconfig', 'qt4muc' ], toolpath=['admin']
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
-env['CXXFLAGS']+="-Wall -Werror -g -fpic"
+env['CXXFLAGS']+=['-Wall', '-Werror', '-g', '-fpic']
 
 tests = { }
 tests.update( env['PKGCONFIG_TESTS'] )
@@ -19,8 +19,8 @@ conf = Configure( env, custom_tests=tests, conf_dir='cache', log_file='cache/con
 
 if not conf.CheckHeader( 'stdio.h', language="C" ):
 	Exit( 1 )
-if not conf.CheckHeader( "iostream", language="C++" ):
-	Exit( 1 )
+#if not conf.CheckHeader( "iostream", language="C++" ):
+#	Exit( 1 )
 
 allpresent = 1
 
